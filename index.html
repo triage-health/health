@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IR-HMS | Indian Railways Health Management & Patient Database Portal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            irctc: {
+              navy: '#08254c',
+              blue: '#213d77',
+              lightBlue: '#eef3f8',
+              orange: '#fb792b',
+              darkOrange: '#e05d10',
+              gold: '#ffb703',
+              gray: '#f4f6f9',
+              border: '#dbe2ea'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-report, #printable-report * {
+        visibility: visible;
+      }
+      #printable-report {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 15px;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    .railway-pattern {
+      background-color: #08254c;
+      background-image: radial-gradient(#213d77 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-irctc-orange selection:text-white">
+
+  <!-- TOP GOVT / MINISTRY HEADER -->
+  <header class="bg-white border-b border-slate-200 text-xs no-print">
+    <!-- Tricolor Top Stripe -->
+    <div class="h-1.5 w-full bg-gradient-to-r from-[#FF9933] via-white to-[#138808]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-3">
+        <!-- National Emblem Placeholder Badge -->
+        <div class="w-7 h-7 rounded-full bg-irctc-navy text-irctc-gold flex items-center justify-center font-bold text-xs shadow-inner">
+          <i class="fa-solid fa-shield-heart"></i>
+        </div>
+        <div>
+          <span class="font-bold text-slate-900 tracking-wide">MINISTRY OF RAILWAYS & HEALTHCARE</span>
+          <span class="text-slate-500 hidden sm:inline"> | Government of India</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4 text-slate-600">
+        <div class="flex items-center space-x-1.5 font-medium">
+          <i class="fa-regular fa-clock text-irctc-orange"></i>
+          <span id="live-clock">--:--:-- IST</span>
+        </div>
+        <div class="h-3 w-px bg-slate-300"></div>
+        <span class="cursor-pointer hover:text-irctc-orange text-xs font-semibold">A+</span>
+        <span class="cursor-pointer hover:text-irctc-orange text-xs font-semibold">A-</span>
+        <div class="h-3 w-px bg-slate-300"></div>
+        <span class="bg-irctc-lightBlue text-irctc-navy px-2 py-0.5 rounded font-semibold border border-irctc-border">
+          <i class="fa-solid fa-language mr-1"></i> English
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN NAVIGATION (IRCTC STYLED) -->
+  <nav class="bg-irctc-navy text-white sticky top-0 z-40 shadow-lg no-print">
+    <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 py-3">
+        <div class="bg-white p-2 rounded-lg text-irctc-navy text-2xl shadow-md border-2 border-irctc-orange flex items-center justify-center">
+          <i class="fa-solid fa-train-subway text-irctc-orange"></i>
+          <i class="fa-solid fa-notes-medical text-irctc-blue -ml-1"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-2xl font-extrabold tracking-tight text-white font-serif">IR-HMS</span>
+            <span class="bg-irctc-orange text-white text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded">Digital Portal</span>
+          </div>
+          <p class="text-[11px] text-slate-300 font-medium tracking-wide">Indian Railways Health & Patient Records Registry</p>
+        </div>
+      </div>
+
+      <!-- Nav Items -->
+      <div class="hidden md:flex items-center space-x-1 font-medium text-sm">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-link active-nav px-3 py-2 rounded-md hover:bg-irctc-blue transition flex items-center space-x-2 text-irctc-gold border-b-2 border-irctc-gold">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>Dashboard</span>
+        </button>
+        <button onclick="switchTab('patients')" id="nav-patients" class="nav-link px-3 py-2 rounded-md hover:bg-irctc-blue transition flex items-center space-x-2 text-slate-200">
+          <i class="fa-solid fa-hospital-user"></i>
+          <span>Patient Registry</span>
+        </button>
+        <button onclick="switchTab('reports')" id="nav-reports" class="nav-link px-3 py-2 rounded-md hover:bg-irctc-blue transition flex items-center space-x-2 text-slate-200">
+          <i class="fa-solid fa-file-waveform"></i>
+          <span>Diagnostic Reports</span>
+        </button>
+        <button onclick="openModal('add-patient-modal')" class="bg-irctc-orange hover:bg-irctc-darkOrange text-white px-3.5 py-2 rounded font-semibold text-xs tracking-wider uppercase transition shadow flex items-center space-x-1.5 ml-2">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>New Patient</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- NEWS / ALERT TICKER (Iconic IRCTC ticker) -->
+    <div class="bg-irctc-orange/95 text-white py-1 px-4 text-xs font-semibold flex items-center shadow-inner">
+      <div class="flex items-center space-x-2 whitespace-nowrap bg-irctc-darkOrange px-2 py-0.5 rounded mr-3 uppercase tracking-wider text-[10px]">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>Advisory</span>
+      </div>
+      <marquee behavior="scroll" direction="left" class="font-medium tracking-wide" scrollamount="6">
+        🚨 All Zonal Railway Hospitals (Northern, Western, Eastern, Southern) can now sync real-time OPD Checkup reports with UHID integration. | Maintain digital backup for all MRI, ECG & Pathology reports under IR-Digital Health Mission 2025.
+      </marquee>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow space-y-6">
+
+    <!-- HERO SEARCH WIDGET (PNR / UHID Quick Enquiry Form) -->
+    <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden no-print">
+      <div class="bg-gradient-to-r from-irctc-navy to-irctc-blue px-6 py-3.5 text-white flex justify-between items-center">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-magnifying-glass-arrow-right text-irctc-gold text-lg"></i>
+          <h2 class="font-bold text-base tracking-wide">QUICK PATIENT / REPORT ENQUIRY (PNR/UHID LOOKUP)</h2>
+        </div>
+        <span class="text-xs bg-white/10 px-2.5 py-1 rounded text-slate-200">Central Database Search</span>
+      </div>
+      
+      <div class="p-6 bg-slate-50/50">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          
+          <div class="md:col-span-4">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <i class="fa-solid fa-id-card-clip text-irctc-orange mr-1"></i> Patient UHID / Medical ID
+            </label>
+            <div class="relative">
+              <input type="text" id="search-uhid" placeholder="e.g. IR-2025-8841" class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-irctc-blue focus:border-irctc-blue outline-none uppercase" />
+              <i class="fa-solid fa-hashtag absolute left-3 top-3.5 text-slate-400 text-xs"></i>
+            </div>
+          </div>
+
+          <div class="md:col-span-3">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <i class="fa-solid fa-hospital text-irctc-orange mr-1"></i> Department / Ward
+            </label>
+            <select id="search-dept" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="">All Departments</option>
+              <option value="Cardiology">Cardiology (Heart)</option>
+              <option value="Radiology">Radiology & Imaging</option>
+              <option value="Pathology">Pathology & Blood</option>
+              <option value="Orthopedics">Orthopedics</option>
+              <option value="General Medicine">General Medicine</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-3">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <i class="fa-solid fa-vial-circle-check text-irctc-orange mr-1"></i> Report Status
+            </label>
+            <select id="search-status" class="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="">All Statuses</option>
+              <option value="Normal">Normal</option>
+              <option value="Attention Required">Attention Required</option>
+              <option value="Critical">Critical</option>
+              <option value="Pending Analysis">Pending Analysis</option>
+            </select>
+          </div>
+
+          <div class="md:col-span-2 flex space-x-2">
+            <button onclick="executeFilter()" class="w-full bg-irctc-orange hover:bg-irctc-darkOrange text-white py-2.5 px-4 rounded-lg font-bold text-sm tracking-wider uppercase transition shadow flex items-center justify-center space-x-2">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <span>SEARCH</span>
+            </button>
+            <button onclick="resetFilters()" title="Reset Filters" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2.5 rounded-lg transition">
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: DASHBOARD OVERVIEW -->
+    <div id="tab-dashboard" class="tab-content space-y-6">
+      
+      <!-- STATS COUNTERS (RAILWAY BOOKING METRIC STYLE) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between border-l-4 border-l-irctc-navy">
+          <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Patients Enrolled</p>
+            <h3 class="text-2xl font-black text-slate-800 mt-1" id="stat-patients">0</h3>
+            <span class="text-[11px] text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> Railway Beneficiaries</span>
+          </div>
+          <div class="w-12 h-12 bg-irctc-lightBlue text-irctc-navy rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-hospital-user"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between border-l-4 border-l-irctc-orange">
+          <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Reports In Database</p>
+            <h3 class="text-2xl font-black text-slate-800 mt-1" id="stat-reports">0</h3>
+            <span class="text-[11px] text-irctc-orange font-semibold"><i class="fa-solid fa-database"></i> Lab & Checkup records</span>
+          </div>
+          <div class="w-12 h-12 bg-amber-50 text-irctc-orange rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-file-medical"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between border-l-4 border-l-rose-500">
+          <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Critical / Flagged</p>
+            <h3 class="text-2xl font-black text-rose-600 mt-1" id="stat-critical">0</h3>
+            <span class="text-[11px] text-rose-500 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Immediate Consult Needed</span>
+          </div>
+          <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between border-l-4 border-l-emerald-600">
+          <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Medical Zones</p>
+            <h3 class="text-2xl font-black text-emerald-700 mt-1">16 Div.</h3>
+            <span class="text-[11px] text-slate-500 font-semibold"><i class="fa-solid fa-building-shield"></i> All India Integrated</span>
+          </div>
+          <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-network-wired"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RECENT REPORTS TABLE (IRCTC TABULAR RESERVATION CHART STYLE) -->
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-irctc-blue"></i>
+              Live Checkup & Diagnostic Reports Register
+            </h3>
+            <p class="text-xs text-slate-500">Real-time repository of pathology, radiology, vitals and medical checkups</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="openModal('add-report-modal')" class="bg-irctc-navy hover:bg-irctc-blue text-white px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition flex items-center space-x-1.5 shadow">
+              <i class="fa-solid fa-plus-circle"></i>
+              <span>File New Report</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-irctc-navy text-white uppercase text-[11px] tracking-wider border-b border-slate-300">
+                <th class="py-3 px-4">UHID / Medical ID</th>
+                <th class="py-3 px-4">Patient Details</th>
+                <th class="py-3 px-4">Test / Checkup Name</th>
+                <th class="py-3 px-4">Department</th>
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4">Attending Doctor</th>
+                <th class="py-3 px-4 text-center">Status</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reports-table-body" class="divide-y divide-slate-200">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="no-reports-msg" class="hidden p-8 text-center text-slate-400">
+          <i class="fa-regular fa-folder-open text-4xl mb-2 text-slate-300"></i>
+          <p class="font-medium text-sm">No medical records match your criteria.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 2: PATIENT REGISTRY -->
+    <div id="tab-patients" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-users-line text-irctc-orange"></i>
+              Registered Patients & Railway Beneficiaries
+            </h3>
+            <p class="text-xs text-slate-500">Master database of all registered railway personnel and dependants</p>
+          </div>
+          <button onclick="openModal('add-patient-modal')" class="bg-irctc-orange hover:bg-irctc-darkOrange text-white px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition flex items-center space-x-1.5">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Register Patient</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-irctc-blue text-white uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-4">UHID</th>
+                <th class="py-3 px-4">Patient Name</th>
+                <th class="py-3 px-4">Age / Gender</th>
+                <th class="py-3 px-4">Railway Division / Zone</th>
+                <th class="py-3 px-4">Blood Group</th>
+                <th class="py-3 px-4">Contact Phone</th>
+                <th class="py-3 px-4 text-center">Reports Count</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="patients-table-body" class="divide-y divide-slate-200">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DIAGNOSTIC REPORTS DIRECTORY -->
+    <div id="tab-reports" class="tab-content hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">Diagnostic & Lab Test Vault</h3>
+          <p class="text-xs text-slate-500">Search, view digital test slips, and print IRCTC e-Ticket styled medical reports.</p>
+        </div>
+        <button onclick="openModal('add-report-modal')" class="bg-irctc-navy hover:bg-irctc-blue text-white px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider">
+          <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Add Lab Result
+        </button>
+      </div>
+
+      <div id="report-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER (OFFICIAL RAILWAY PORTAL STYLE) -->
+  <footer class="bg-irctc-navy text-slate-300 text-xs mt-12 border-t-4 border-irctc-orange no-print">
+    <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div>
+        <div class="flex items-center space-x-2 text-white font-bold text-base mb-2">
+          <i class="fa-solid fa-shield-heart text-irctc-gold"></i>
+          <span>IR-HMS Portal</span>
+        </div>
+        <p class="text-slate-400 text-[11px] leading-relaxed">
+          Integrated Railway Health Management System for digital health records, e-Hospital checkups and diagnostics under Central Railway Medical Board.
+        </p>
+      </div>
+      <div>
+        <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-2.5">Railway Hospital Zones</h4>
+        <ul class="space-y-1 text-[11px] text-slate-400">
+          <li>• Northern Railway Central Hospital, New Delhi</li>
+          <li>• B.R. Singh Hospital, Sealdah (Eastern)</li>
+          <li>• Jagjivan Ram Hospital, Mumbai (Western)</li>
+          <li>• Perambur Railway Hospital, Chennai (Southern)</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-2.5">Emergency Helpline</h4>
+        <p class="text-slate-400 text-[11px] mb-1">Railway Health Support: <span class="text-irctc-gold font-bold">139 / 1072</span></p>
+        <p class="text-slate-400 text-[11px] mb-1">Ambulance Dispatch: <span class="text-rose-400 font-bold">102 / 108</span></p>
+        <p class="text-slate-400 text-[11px]">Email: <span class="text-slate-300">support.irhms@gov.in</span></p>
+      </div>
+      <div>
+        <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-2.5">Security & Compliance</h4>
+        <div class="flex items-center space-x-2 bg-slate-800/80 p-2.5 rounded border border-slate-700">
+          <i class="fa-solid fa-lock text-emerald-400 text-lg"></i>
+          <span class="text-[10px] text-slate-300 font-medium leading-tight">256-Bit SSL Encrypted Health Vault. Compliant with National Digital Health Mission.</span>
+        </div>
+      </div>
+    </div>
+    <div class="bg-black/30 py-3 text-center text-[11px] text-slate-400 border-t border-slate-800">
+      © 2025 Indian Railways Health Management System (IR-HMS). All Rights Reserved. Designed for Railway Medical Service.
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL: ADD NEW PATIENT -->
+  <div id="add-patient-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-2xl max-w-xl w-full overflow-hidden border-2 border-irctc-navy animate-in fade-in zoom-in duration-200">
+      <div class="bg-irctc-navy text-white px-6 py-3.5 flex justify-between items-center">
+        <div class="flex items-center space-x-2 font-bold text-sm">
+          <i class="fa-solid fa-id-badge text-irctc-gold"></i>
+          <span>PATIENT ENROLLMENT FORM (RAILWAY HEALTH SCHEME)</span>
+        </div>
+        <button onclick="closeModal('add-patient-modal')" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      
+      <form id="form-add-patient" onsubmit="handleNewPatient(event)" class="p-6 space-y-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">FULL NAME *</label>
+            <input type="text" id="p-name" required placeholder="e.g. Rajesh Kumar Sharma" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">RAILWAY PASS / EMP ID</label>
+            <input type="text" id="p-empid" placeholder="e.g. NR-EMP-98214" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none uppercase">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">AGE *</label>
+            <input type="number" id="p-age" required min="1" max="120" placeholder="e.g. 45" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">GENDER *</label>
+            <select id="p-gender" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">BLOOD GROUP *</label>
+            <select id="p-blood" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="B+">B+</option>
+              <option value="O+">O+</option>
+              <option value="A+">A+</option>
+              <option value="AB+">AB+</option>
+              <option value="B-">B-</option>
+              <option value="O-">O-</option>
+              <option value="A-">A-</option>
+              <option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">ZONAL DIVISION *</label>
+            <select id="p-zone" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="Northern Railway (Delhi)">Northern Railway (Delhi)</option>
+              <option value="Western Railway (Mumbai)">Western Railway (Mumbai)</option>
+              <option value="Eastern Railway (Kolkata)">Eastern Railway (Kolkata)</option>
+              <option value="Southern Railway (Chennai)">Southern Railway (Chennai)</option>
+              <option value="Central Railway (Pune/CST)">Central Railway (Pune/CST)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">PHONE NUMBER *</label>
+            <input type="tel" id="p-phone" required placeholder="e.g. 9876543210" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">KNOWN ALLERGIES / CHRONIC CONDITIONS</label>
+          <input type="text" id="p-conditions" placeholder="e.g. Hypertension, Penicillin Allergy, Type 2 Diabetes" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex justify-end space-x-3">
+          <button type="button" onclick="closeModal('add-patient-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded font-semibold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-irctc-orange hover:bg-irctc-darkOrange text-white font-bold rounded shadow uppercase tracking-wider">Save & Generate UHID</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD REPORT -->
+  <div id="add-report-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden border-2 border-irctc-orange animate-in fade-in zoom-in duration-200">
+      <div class="bg-irctc-navy text-white px-6 py-3.5 flex justify-between items-center">
+        <div class="flex items-center space-x-2 font-bold text-sm">
+          <i class="fa-solid fa-microscope text-irctc-gold"></i>
+          <span>FILE MEDICAL CHECKUP / DIAGNOSTIC REPORT</span>
+        </div>
+        <button onclick="closeModal('add-report-modal')" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form id="form-add-report" onsubmit="handleNewReport(event)" class="p-6 space-y-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">SELECT PATIENT *</label>
+            <select id="rep-patient-id" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <!-- Dynamically populated with registered patients -->
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">DEPARTMENT *</label>
+            <select id="rep-dept" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="Pathology">Pathology & Blood Work</option>
+              <option value="Cardiology">Cardiology (ECG / Echo)</option>
+              <option value="Radiology">Radiology (X-Ray / MRI / CT)</option>
+              <option value="Orthopedics">Orthopedics & Bone Health</option>
+              <option value="General Medicine">General OPD Routine Checkup</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">TEST / CHECKUP TITLE *</label>
+            <input type="text" id="rep-title" required placeholder="e.g. Complete Blood Count (CBC)" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">ATTENDING DOCTOR *</label>
+            <input type="text" id="rep-doctor" required placeholder="e.g. Dr. A. K. Sen, MD" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">CHECKUP DATE *</label>
+            <input type="date" id="rep-date" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">DIAGNOSTIC STATUS / SEVERITY *</label>
+            <select id="rep-status" required class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+              <option value="Normal">Normal (No Abnormalities)</option>
+              <option value="Attention Required">Attention Required (Mild)</option>
+              <option value="Critical">Critical (Immediate Care)</option>
+              <option value="Pending Analysis">Pending Secondary Opinion</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">KEY CLINICAL VITALS / METRICS</label>
+            <input type="text" id="rep-vitals" placeholder="e.g. BP: 120/80 mmHg | SpO2: 98% | Pulse: 72 bpm" class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">DOCTOR'S FINDINGS / CLINICAL REMARKS *</label>
+          <textarea id="rep-findings" rows="3" required placeholder="Detailed clinical evaluation, diagnosis, medications prescribed, and follow-up advice..." class="w-full px-3 py-2 border border-slate-300 rounded font-medium focus:ring-2 focus:ring-irctc-blue outline-none"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex justify-end space-x-3">
+          <button type="button" onclick="closeModal('add-report-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded font-semibold hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-irctc-navy hover:bg-irctc-blue text-white font-bold rounded shadow uppercase tracking-wider">Save Diagnostic Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: OFFICIAL RAILWAY MEDICAL REPORT VIEWER (IRCTC e-TICKET STYLE) -->
+  <div id="view-report-modal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-2 sm:p-4 hidden backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full overflow-hidden border-2 border-irctc-navy my-8">
+      
+      <!-- Modal Toolbar -->
+      <div class="bg-irctc-navy text-white px-5 py-2.5 flex justify-between items-center no-print">
+        <div class="flex items-center space-x-2 text-xs font-bold tracking-wider">
+          <i class="fa-solid fa-print text-irctc-gold"></i>
+          <span>CENTRAL MEDICAL SLIP & DIAGNOSTIC RECEIPT</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="window.print()" class="bg-irctc-orange hover:bg-irctc-darkOrange text-white px-3 py-1 rounded text-xs font-bold uppercase transition flex items-center space-x-1">
+            <i class="fa-solid fa-print mr-1"></i> Print / PDF
+          </button>
+          <button onclick="closeModal('view-report-modal')" class="text-slate-300 hover:text-white px-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+      </div>
+
+      <!-- Printable Document Container (IRCTC e-Ticket Styled Design) -->
+      <div id="printable-report" class="p-6 text-slate-800 text-xs bg-white">
+        
+        <!-- Report Header -->
+        <div class="border-2 border-slate-800 rounded-lg p-4 mb-4">
+          <div class="flex justify-between items-start border-b-2 border-slate-800 pb-3 mb-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 bg-irctc-navy text-irctc-gold rounded-full flex items-center justify-center text-xl font-black border-2 border-slate-800">
+                <i class="fa-solid fa-train"></i>
+              </div>
+              <div>
+                <h1 class="text-base font-black text-irctc-navy tracking-tight">INDIAN RAILWAYS MEDICAL HEALTH SYSTEM</h1>
+                <p class="text-[10px] font-bold text-slate-600">CENTRAL RAILWAY HOSPITAL CLINICAL LAB & DIAGNOSTICS</p>
+                <p class="text-[9px] text-slate-500">Government of India • Ministry of Railways</p>
+              </div>
+            </div>
+            
+            <div class="text-right">
+              <div class="inline-block bg-slate-100 border border-slate-400 px-3 py-1 rounded text-center">
+                <span class="block text-[9px] font-bold uppercase text-slate-500">Electronic Health Record</span>
+                <span id="card-pnr" class="font-mono text-sm font-black text-irctc-navy">UHID-99281-NDLS</span>
+              </div>
+              <p class="text-[9px] text-slate-500 mt-1">Generated: <span id="card-gentime">2025-05-10 10:30 IST</span></p>
+            </div>
+          </div>
+
+          <!-- Patient Demographics (IRCTC Passenger Grid Look) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-2.5 rounded border border-slate-200 mb-3 text-[11px]">
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Patient Name</span>
+              <strong id="card-name" class="text-slate-900 font-bold text-xs">-</strong>
+            </div>
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Age / Gender / Blood</span>
+              <strong id="card-demog" class="text-slate-900">-</strong>
+            </div>
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Railway Division</span>
+              <strong id="card-zone" class="text-slate-900">-</strong>
+            </div>
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Contact No.</span>
+              <strong id="card-phone" class="text-slate-900">-</strong>
+            </div>
+          </div>
+
+          <!-- Medical Test Specifications -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 border border-dashed border-slate-300 p-2.5 rounded mb-4">
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Test / Checkup Conducted</span>
+              <strong id="card-test-name" class="text-irctc-navy text-xs font-bold">-</strong>
+            </div>
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Department</span>
+              <span id="card-dept" class="font-semibold text-slate-800">-</span>
+            </div>
+            <div>
+              <span class="text-[10px] block text-slate-500 font-semibold uppercase">Status Result</span>
+              <span id="card-status-badge" class="px-2 py-0.5 rounded font-bold text-[10px] inline-block">-</span>
+            </div>
+          </div>
+
+          <!-- Clinical Vitals Grid -->
+          <div class="mb-4">
+            <h4 class="text-[10px] font-bold text-irctc-navy uppercase tracking-wider mb-1">1. Clinical Vitals & Parameters Recorded</h4>
+            <div class="bg-slate-100 p-2.5 rounded border border-slate-200 font-mono text-[11px] text-slate-800" id="card-vitals">
+              -
+            </div>
+          </div>
+
+          <!-- Findings & Prescriptions -->
+          <div class="mb-6">
+            <h4 class="text-[10px] font-bold text-irctc-navy uppercase tracking-wider mb-1">2. Doctor's Clinical Impression & Prescriptions</h4>
+            <div class="border border-slate-200 p-3 rounded text-slate-800 bg-white leading-relaxed text-xs" id="card-findings">
+              -
+            </div>
+          </div>
+
+          <!-- Footer Signature & QR Simulation -->
+          <div class="border-t-2 border-slate-800 pt-3 flex justify-between items-end">
+            <div class="flex items-center space-x-3">
+              <!-- QR Code Mock -->
+              <div class="w-14 h-14 bg-slate-900 p-1 flex items-center justify-center rounded text-white text-2xl font-bold">
+                <i class="fa-solid fa-qrcode"></i>
+              </div>
+              <div class="text-[9px] text-slate-500">
+                <p class="font-bold text-slate-700">Digitally Verified Document</p>
+                <p>National Health Stack (Railway Health Card Sync)</p>
+                <p>Tamper-proof Cryptographic Verification</p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <div class="h-8 flex items-center justify-end font-serif italic text-slate-600 text-sm">
+                <span id="card-doc-signature">Dr. Attending Doctor</span>
+              </div>
+              <div class="border-t border-slate-400 pt-0.5 text-[10px] font-bold text-slate-800 uppercase" id="card-doc-name">
+                Medical Officer / Superintendent
+              </div>
+              <span class="text-[9px] text-slate-500">Central Railway Hospital</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="text-center text-[9px] text-slate-400 uppercase">
+          *** This is a computer generated official electronic health record slip. No physical signature required. ***
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== LOGIC & DATABASE SCRIPTS ==================== -->
+  <script>
+    // INITIAL MOCK DATABASE (Stored in LocalStorage for persistence)
+    const DEFAULT_PATIENTS = [
+      {
+        id: "IR-2025-1001",
+        name: "Devendra Pratap Singh",
+        empId: "NR-LOCO-4492",
+        age: 52,
+        gender: "Male",
+        blood: "B+",
+        zone: "Northern Railway (Delhi)",
+        phone: "+91 98101 23456",
+        conditions: "Hypertension, Mild Asthmatic"
+      },
+      {
+        id: "IR-2025-1002",
+        name: "Sunita Anantharaman",
+        empId: "SR-ACC-8812",
+        age: 44,
+        gender: "Female",
+        blood: "O+",
+        zone: "Southern Railway (Chennai)",
+        phone: "+91 94440 98765",
+        conditions: "Type 2 Diabetes Mellitus"
+      },
+      {
+        id: "IR-2025-1003",
+        name: "Amitabh Banerjee",
+        empId: "ER-ENG-3109",
+        age: 61,
+        gender: "Male",
+        blood: "AB+",
+        zone: "Eastern Railway (Kolkata)",
+        phone: "+91 98300 45678",
+        conditions: "Post-Angioplasty Stent (2023)"
+      },
+      {
+        id: "IR-2025-1004",
+        name: "Pooja Varma",
+        empId: "WR-TC-7721",
+        age: 29,
+        gender: "Female",
+        blood: "A+",
+        zone: "Western Railway (Mumbai)",
+        phone: "+91 98200 11223",
+        conditions: "None Reported"
+      }
+    ];
+
+    const DEFAULT_REPORTS = [
+      {
+        id: "REP-9901",
+        patientId: "IR-2025-1001",
+        title: "Annual Locomotor & Cardio Checkup",
+        dept: "Cardiology",
+        doctor: "Dr. K. N. Rao, MD (Cardiology)",
+        date: "2025-05-02",
+        status: "Attention Required",
+        vitals: "BP: 145/95 mmHg | Pulse: 78 bpm | SpO2: 97% | BMI: 27.2",
+        findings: "Grade 1 Hypertension noted during stress test. Advised Tab. Telmisartan 40mg OD. Routine dietary sodium restriction and review in 4 weeks."
+      },
+      {
+        id: "REP-9902",
+        patientId: "IR-2025-1002",
+        title: "Comprehensive Glycemic Profile (HbA1c & Fasting)",
+        dept: "Pathology",
+        doctor: "Dr. Malini Iyer, MD (Path)",
+        date: "2025-05-08",
+        status: "Normal",
+        vitals: "HbA1c: 6.2% | Fasting Sugar: 108 mg/dL | PP: 142 mg/dL",
+        findings: "Excellent glycemic control maintained. Continue current dosage of Metformin 500mg. Lipid profile within safe physiological limits."
+      },
+      {
+        id: "REP-9903",
+        patientId: "IR-2025-1003",
+        title: "Coronary Echo & Color Doppler Review",
+        dept: "Cardiology",
+        doctor: "Dr. S. Mukherjee, DM (Cardio)",
+        date: "2025-05-09",
+        status: "Critical",
+        vitals: "LVEF: 40% | Resting BP: 160/100 mmHg | ECG: ST-T Wave Changes",
+        findings: "Reduced ejection fraction observed with anterior wall hypokinesia. Urgent consultation with chief interventional cardiologist scheduled. Admission recommended."
+      },
+      {
+        id: "REP-9904",
+        patientId: "IR-2025-1004",
+        title: "Chest X-Ray (PA View) & Fitness Check",
+        dept: "Radiology",
+        doctor: "Dr. R. K. Goel, DMRD",
+        date: "2025-05-10",
+        status: "Normal",
+        vitals: "SpO2: 99% Room Air | Heart Rate: 72 Regular",
+        findings: "Bilateral lung fields appear normal and clear. Normal cardiothoracic ratio. Certified fit for railway duties."
+      }
+    ];
+
+    // Local Storage State Init
+    let patients = JSON.parse(localStorage.getItem('ir_patients')) || DEFAULT_PATIENTS;
+    let reports = JSON.parse(localStorage.getItem('ir_reports')) || DEFAULT_REPORTS;
+
+    function saveState() {
+      localStorage.setItem('ir_patients', JSON.stringify(patients));
+      localStorage.setItem('ir_reports', JSON.stringify(reports));
+    }
+
+    // CLOCK TICKER
+    function updateClock() {
+      const now = new Date();
+      const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' };
+      document.getElementById('live-clock').innerText = now.toLocaleTimeString('en-GB', options) + ' IST';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // TAB NAVIGATION
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-link').forEach(el => {
+        el.classList.remove('text-irctc-gold', 'border-b-2', 'border-irctc-gold');
+        el.classList.add('text-slate-200');
+      });
+
+      const activeTab = document.getElementById(`tab-${tabId}`);
+      if (activeTab) activeTab.classList.remove('hidden');
+
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeNav) {
+        activeNav.classList.add('text-irctc-gold', 'border-b-2', 'border-irctc-gold');
+        activeNav.classList.remove('text-slate-200');
+      }
+    }
+
+    // MODAL CONTROL
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+      if (modalId === 'add-report-modal') {
+        populatePatientDropdown();
+        document.getElementById('rep-date').value = new Date().toISOString().split('T')[0];
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // STATUS BADGE UTILITY
+    function getStatusBadge(status) {
+      switch (status) {
+        case 'Normal':
+          return `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded font-bold text-[10px] inline-flex items-center gap-1"><i class="fa-solid fa-check"></i> Normal</span>`;
+        case 'Attention Required':
+          return `<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded font-bold text-[10px] inline-flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> Attention</span>`;
+        case 'Critical':
+          return `<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded font-bold text-[10px] inline-flex items-center gap-1"><i class="fa-solid fa-circle-radiation"></i> Critical</span>`;
+        default:
+          return `<span class="bg-slate-100 text-slate-800 border border-slate-300 px-2 py-0.5 rounded font-bold text-[10px] inline-flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> Pending</span>`;
+      }
+    }
+
+    // RENDER TABLES & VIEWS
+    function renderDashboard(filteredReports = null) {
+      const displayReports = filteredReports || reports;
+      const tbody = document.getElementById('reports-table-body');
+      tbody.innerHTML = '';
+
+      // Update counters
+      document.getElementById('stat-patients').innerText = patients.length;
+      document.getElementById('stat-reports').innerText = reports.length;
+      document.getElementById('stat-critical').innerText = reports.filter(r => r.status === 'Critical').length;
+
+      if (displayReports.length === 0) {
+        document.getElementById('no-reports-msg').classList.remove('hidden');
+      } else {
+        document.getElementById('no-reports-msg').classList.add('hidden');
+      }
+
+      displayReports.forEach(rep => {
+        const patient = patients.find(p => p.id === rep.patientId) || { name: 'Unknown', age: '--', gender: '--', blood: '--' };
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-200 text-slate-700 font-medium";
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-irctc-navy">${rep.patientId}</td>
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-800">${patient.name}</div>
+            <div class="text-[10px] text-slate-500">${patient.age}Y • ${patient.gender} • <span class="text-rose-600 font-bold">${patient.blood}</span></div>
+          </td>
+          <td class="py-3 px-4 font-semibold text-slate-900">${rep.title}</td>
+          <td class="py-3 px-4">
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200 text-[10px] font-semibold">${rep.dept}</span>
+          </td>
+          <td class="py-3 px-4 font-mono text-[11px]">${rep.date}</td>
+          <td class="py-3 px-4 text-slate-600">${rep.doctor}</td>
+          <td class="py-3 px-4 text-center">${getStatusBadge(rep.status)}</td>
+          <td class="py-3 px-4 text-center space-x-1.5 whitespace-nowrap">
+            <button onclick="viewReportSlip('${rep.id}')" title="Print / View Medical Slip" class="bg-irctc-navy hover:bg-irctc-blue text-white px-2.5 py-1 rounded text-[11px] font-bold">
+              <i class="fa-solid fa-file-invoice"></i> View Slip
+            </button>
+            <button onclick="deleteReport('${rep.id}')" title="Delete Entry" class="text-rose-600 hover:text-rose-800 p-1">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      renderPatientsTable();
+      renderReportCards();
+    }
+
+    function renderPatientsTable() {
+      const tbody = document.getElementById('patients-table-body');
+      tbody.innerHTML = '';
+
+      patients.forEach(p => {
+        const count = reports.filter(r => r.patientId === p.id).length;
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-200 font-medium";
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-irctc-blue">${p.id}</td>
+          <td class="py-3 px-4 font-bold text-slate-800">
+            ${p.name}
+            <span class="block text-[10px] font-mono text-slate-400 font-normal">Emp: ${p.empId || 'N/A'}</span>
+          </td>
+          <td class="py-3 px-4">${p.age} Yrs / ${p.gender}</td>
+          <td class="py-3 px-4 text-slate-600">${p.zone}</td>
+          <td class="py-3 px-4"><span class="bg-rose-50 text-rose-700 font-bold px-1.5 py-0.5 rounded border border-rose-200">${p.blood}</span></td>
+          <td class="py-3 px-4 font-mono text-slate-600">${p.phone}</td>
+          <td class="py-3 px-4 text-center">
+            <span class="bg-irctc-lightBlue text-irctc-navy font-bold px-2 py-0.5 rounded-full text-xs">${count} Tests</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="filterByPatient('${p.id}')" class="text-xs bg-slate-100 hover:bg-irctc-orange hover:text-white px-2 py-1 rounded transition font-semibold border border-slate-300">
+              <i class="fa-solid fa-folder-open mr-1"></i> Reports
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderReportCards() {
+      const grid = document.getElementById('report-cards-grid');
+      grid.innerHTML = '';
+
+      reports.forEach(rep => {
+        const patient = patients.find(p => p.id === rep.patientId) || { name: 'Unknown' };
+        const card = document.createElement('div');
+        card.className = "bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4";
+
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <span class="font-mono text-[10px] font-bold text-irctc-orange bg-orange-50 px-2 py-0.5 rounded border border-orange-200">${rep.id}</span>
+              ${getStatusBadge(rep.status)}
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-1">${rep.title}</h4>
+            <p class="text-xs text-slate-600 mb-2"><i class="fa-solid fa-user-circle mr-1 text-slate-400"></i> Patient: <strong>${patient.name}</strong> (${rep.patientId})</p>
+            <div class="bg-slate-50 p-2.5 rounded text-[11px] text-slate-600 font-mono border border-slate-200 mb-2">
+              ${rep.vitals || 'Vitals standard.'}
+            </div>
+            <p class="text-xs text-slate-500 line-clamp-2 italic">"${rep.findings}"</p>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+            <span class="text-slate-400 text-[10px]"><i class="fa-regular fa-calendar mr-1"></i>${rep.date}</span>
+            <button onclick="viewReportSlip('${rep.id}')" class="bg-irctc-navy hover:bg-irctc-blue text-white px-3 py-1.5 rounded font-bold text-xs uppercase tracking-wide">
+              <i class="fa-solid fa-print mr-1"></i> Medical Slip
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // FORM HANDLERS
+    function handleNewPatient(e) {
+      e.preventDefault();
+      const newId = `IR-2025-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newPatient = {
+        id: newId,
+        name: document.getElementById('p-name').value,
+        empId: document.getElementById('p-empid').value || 'DEP-' + Math.floor(1000 + Math.random() * 9000),
+        age: document.getElementById('p-age').value,
+        gender: document.getElementById('p-gender').value,
+        blood: document.getElementById('p-blood').value,
+        zone: document.getElementById('p-zone').value,
+        phone: document.getElementById('p-phone').value,
+        conditions: document.getElementById('p-conditions').value || 'None'
+      };
+
+      patients.unshift(newPatient);
+      saveState();
+      renderDashboard();
+      closeModal('add-patient-modal');
+      e.target.reset();
+      alert(`Patient successfully registered with UHID: ${newId}`);
+    }
+
+    function populatePatientDropdown() {
+      const select = document.getElementById('rep-patient-id');
+      select.innerHTML = '';
+      patients.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.innerText = `${p.id} - ${p.name} (${p.zone})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleNewReport(e) {
+      e.preventDefault();
+      const newReportId = `REP-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newReport = {
+        id: newReportId,
+        patientId: document.getElementById('rep-patient-id').value,
+        dept: document.getElementById('rep-dept').value,
+        title: document.getElementById('rep-title').value,
+        doctor: document.getElementById('rep-doctor').value,
+        date: document.getElementById('rep-date').value,
+        status: document.getElementById('rep-status').value,
+        vitals: document.getElementById('rep-vitals').value || 'Standard parameters within physiological baseline.',
+        findings: document.getElementById('rep-findings').value
+      };
+
+      reports.unshift(newReport);
+      saveState();
+      renderDashboard();
+      closeModal('add-report-modal');
+      e.target.reset();
+      alert(`Diagnostic record successfully cataloged with ID: ${newReportId}`);
+    }
+
+    function deleteReport(reportId) {
+      if (confirm(`Are you sure you want to delete medical checkup report: ${reportId}?`)) {
+        reports = reports.filter(r => r.id !== reportId);
+        saveState();
+        renderDashboard();
+      }
+    }
+
+    // VIEW MEDICAL REPORT (IRCTC STYLE)
+    function viewReportSlip(reportId) {
+      const rep = reports.find(r => r.id === reportId);
+      if (!rep) return;
+      const patient = patients.find(p => p.id === rep.patientId) || { name: 'Unknown', age: '--', gender: '--', blood: '--', zone: '--', phone: '--' };
+
+      document.getElementById('card-pnr').innerText = `${rep.patientId} / ${rep.id}`;
+      document.getElementById('card-gentime').innerText = `${rep.date} 10:00 IST`;
+      document.getElementById('card-name').innerText = patient.name;
+      document.getElementById('card-demog').innerText = `${patient.age}Y / ${patient.gender} / ${patient.blood}`;
+      document.getElementById('card-zone').innerText = patient.zone;
+      document.getElementById('card-phone').innerText = patient.phone;
+
+      document.getElementById('card-test-name').innerText = rep.title;
+      document.getElementById('card-dept').innerText = rep.dept;
+      
+      const statusBadgeContainer = document.getElementById('card-status-badge');
+      statusBadgeContainer.innerHTML = getStatusBadge(rep.status);
+
+      document.getElementById('card-vitals').innerText = rep.vitals || 'Vitals noted as stable during assessment.';
+      document.getElementById('card-findings').innerText = rep.findings;
+      document.getElementById('card-doc-signature').innerText = rep.doctor;
+      document.getElementById('card-doc-name').innerText = `${rep.doctor} (Senior Medical Officer)`;
+
+      openModal('view-report-modal');
+    }
+
+    // SEARCH & FILTER ENGINE
+    function executeFilter() {
+      const uhidTerm = document.getElementById('search-uhid').value.trim().toLowerCase();
+      const deptTerm = document.getElementById('search-dept').value;
+      const statusTerm = document.getElementById('search-status').value;
+
+      const filtered = reports.filter(rep => {
+        const patient = patients.find(p => p.id === rep.patientId);
+        const matchUhid = !uhidTerm || rep.patientId.toLowerCase().includes(uhidTerm) || (patient && patient.name.toLowerCase().includes(uhidTerm));
+        const matchDept = !deptTerm || rep.dept === deptTerm;
+        const matchStatus = !statusTerm || rep.status === statusTerm;
+        return matchUhid && matchDept && matchStatus;
+      });
+
+      renderDashboard(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById('search-uhid').value = '';
+      document.getElementById('search-dept').value = '';
+      document.getElementById('search-status').value = '';
+      renderDashboard();
+    }
+
+    function filterByPatient(patientId) {
+      document.getElementById('search-uhid').value = patientId;
+      switchTab('dashboard');
+      executeFilter();
+    }
+
+    // Initial Bootstrap
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDashboard();
+    });
+  </script>
+</body>
+</html>
